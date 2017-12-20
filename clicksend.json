@@ -1,0 +1,133 @@
+{
+    "appid": "6b772f0b-5d32-4970-8e9d-e09c7e3ff895",
+    "name": "ClickSend",
+    "description": "ClickSend is a cloud-based service that lets you send and receive SMS, Email, Voice, Fax and Letters worldwide.",
+    "type": "information",
+    "product_vendor": "ClickSend",
+    "logo": "clicksend.png",
+    "product_name": "ClickSend",
+    "product_version_regex": ".*",
+    "publisher": "Han Lievens",
+    "license": "Copyright Han Lievens 2017",
+    "app_version": "1.0.0",
+    "utctime_updated": "2017-12-07T22:40:26.576733Z",
+    "package_name": "phantom_clicksend",
+    "main_module": "clicksend_connector.pyc",
+    "min_phantom_version": "3.0.265",
+    "app_wizard_version": "1.0.0",
+    "configuration": {
+        "base_url": {
+            "description": "The API should always be accessed over SSL.",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "https://rest.clicksend.com/v3/",
+            "order": 0
+        },
+        "username": {
+            "description": "Your API username Example: myusername.",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 1
+        },
+        "key": {
+            "description": "You can find this in your account area under 'API Credentials' at the top of the screen. Example: 094F2_FA56B10A_0F8F6B_A35FD650D829.",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 2
+        },
+        "to": {
+            "description": "Recipient Mobile Number in international format (with leading + and country code). Separate multiple recipients with a comma (,) where applicable. Maximum 1000 recipients. Example: +614XXXXXXXX`(Australia)`.",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 3
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "verbose": "",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "send message",
+            "identifier": "send_message",
+            "description": "Send an SMS",
+            "verbose": "You can post up to 1000 messages with each API call. You can send to a mix of contacts and contact lists, as long as the total number of recipients is up to 1000. The response contains a status and details for each recipient.",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "message": {
+                    "description": "The message to be sent. Maximum 960 characters. Example: This is a test.",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "value_list": [],
+                    "default": "",
+                    "order": 1
+                },
+                "to": {
+		    "required": true,
+		    "description": "Recipient Phone Number. If country code not specified will default to +1",
+		    "data_type": "string",
+		    "value_list": [],
+		    "contains": [
+			"phone number"
+		    ],
+		    "primary": true,
+		    "default": "",
+		    "order": 0
+				}
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.to",
+                    "data_type": "string",
+                    "contains": [
+                        "phone number"
+                    ],
+                    "column_name": "to",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.message",
+                    "data_type": "string",
+                    "column_name": "message",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        }
+    ]
+}
