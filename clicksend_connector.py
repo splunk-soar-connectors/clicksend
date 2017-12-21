@@ -71,10 +71,16 @@ class ClicksendConnector(BaseConnector):
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _make_rest_call(self, endpoint, action_result, headers=None, params=None, data=None, method="post"):
-        config = self.get_config()
+
         resp_json = None
+
+        if (headers is None):
+            headers = dict()
+
+        headers.update({'Content-Type': 'application/json'})
+
         try:
-            request_func = requests.post
+            request_func = getattr(requests, method)
         except AttributeError:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)), resp_json)
 
@@ -82,8 +88,8 @@ class ClicksendConnector(BaseConnector):
         try:
             r = request_func(
                             url,
-                            auth=(config['username'], config['key']),
-                            data=data,
+                            auth=(self._username, self._key),
+                            json=data,
                             headers=headers,
                             params=params)
         except Exception as e:
@@ -92,19 +98,33 @@ class ClicksendConnector(BaseConnector):
         return self._process_response(r, action_result)
 
     def _handle_test_connectivity(self, param):
+
         action_result = self.add_action_result(ActionResult(dict(param)))
-        self.save_progress("Connecting to the ClickSend account to check connectivity")
-        ret_val, response = self._send_message(action_result, 'Testing connectivity from Phantom to ClickSend', self._to)
+
+        self.save_progress("Getting account details from ClickSend to check connectivity")
+        ret_val, response = self._make_rest_call('/account', action_result, method="get")
         if phantom.is_fail(ret_val):
-            self.save_progress("Test Connectivity Failed. Error: {0}".format(action_result.get_message()))
+            self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
+
+        self.save_progress("Done")
+        if (self._to is not None):
+            self.save_progress("Sending a test message to {0}".format(self._to))
+            ret_val, response = self._send_message(action_result, 'Testing connectivity from Phantom to ClickSend', self._to)
+            if phantom.is_fail(ret_val):
+                self.save_progress("Test Connectivity Failed")
+                return action_result.get_status()
+            self.save_progress("Done")
+
         self.save_progress("Test Connectivity Passed")
+
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _send_message(self, action_result, body, to):
+
         data = {'messages': [{'body': body, 'to': to}]}
-        headers = {'Content-Type': 'application/json'}
-        ret_val, response = self._make_rest_call('sms/send', action_result, headers=headers, data=json.dumps(data), method="post")
+
+        ret_val, response = self._make_rest_call('/sms/send', action_result, data=data, method="post")
         if phantom.is_fail(ret_val):
             return RetVal(action_result.get_status(), response)
         return RetVal(phantom.APP_SUCCESS, response)
@@ -114,11 +134,11 @@ class ClicksendConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
         body = param['message']
         to = param['to']
-        ret_val, response = self._send_message(body, to)
+        ret_val, response = self._send_message(action_result, body, to)
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
         action_result.add_data(response)
-        action_result.update_summary({'message_delivery_status': response.get('status', 'unknown')})
+        action_result.update_summary({'response_message': response.get('response_msg', '')})
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def handle_action(self, param):
@@ -134,7 +154,7 @@ class ClicksendConnector(BaseConnector):
     def initialize(self):
         self._state = self.load_state()
         config = self.get_config()
-        self._base_url = config['base_url']
+        self._base_url = config['base_url'].rstrip('/')
         self._username = config['username']
         self._key = config['key']
         self._to = config.get('to')
