@@ -4,7 +4,8 @@
     "description": "This app integrates with ClickSend to send messages",
     "type": "information",
     "product_vendor": "ClickSend",
-    "logo": "clicksend.png",
+    "logo": "logo_clicksend.svg",
+    "logo_dark": "logo_clicksend_dark.svg",
     "product_name": "ClickSend",
     "product_version_regex": ".*",
     "publisher": "Han Lievens",
@@ -23,23 +24,27 @@
             "default": "https://rest.clicksend.com/v3/",
             "order": 0
         },
-        "username": {
-            "description": "Your API username Example: myusername",
-            "data_type": "string",
-            "required": true,
+        "ph": {
+            "data_type": "ph",
             "order": 1
         },
-        "key": {
-            "description": "You can find this in your account area under 'API Credentials' at the top of the screen",
-            "data_type": "password",
+        "username": {
+            "description": "Username Example: myusername",
+            "data_type": "string",
             "required": true,
             "order": 2
         },
+        "key": {
+            "description": "API Key",
+            "data_type": "password",
+            "required": true,
+            "order": 3
+        },
         "to": {
-            "description": "Recipient Mobile Number used only for Test Connectivity",
+            "description": "Recipient Mobile Number (used only for Test Connectivity)",
             "data_type": "string",
             "required": false,
-            "order": 3
+            "order": 4
         }
     },
     "actions": [
