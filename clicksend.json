@@ -1,7 +1,7 @@
 {
     "appid": "6b772f0b-5d32-4970-8e9d-e09c7e3ff895",
     "name": "ClickSend",
-    "description": "This app integrates with ClickSend to send messages",
+    "description": "This app integrates with ClickSend to send SMS messages",
     "type": "information",
     "product_vendor": "ClickSend",
     "logo": "logo_clicksend.svg",
@@ -9,7 +9,7 @@
     "product_name": "ClickSend",
     "product_version_regex": ".*",
     "publisher": "Han Lievens",
-    "license": "Copyright Han Lievens 2017",
+    "license": "Copyright Han Lievens, 2017-2018",
     "app_version": "1.0.3",
     "utctime_updated": "2017-12-28T22:58:20.000000Z",
     "package_name": "phantom_clicksend",
